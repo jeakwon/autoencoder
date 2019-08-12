@@ -4,26 +4,16 @@ from tensorflow.keras.datasets import cifar10
 from tensorflow.keras.layers import Input, Dense, Conv2D, MaxPooling2D, UpSampling2D, BatchNormalization
 from tensorflow.keras.models import Model
 from tensorflow.keras.callbacks import EarlyStopping
-
 import matplotlib.pyplot as plt
-%matplotlib inline
+# %matplotlib inline
 
 (x_train, _), (x_test, _) = cifar10.load_data()
-# noise = 0.5 * np.random.normal(loc=0.0, scale=1.0, size=x_train.shape) 
+
 x_train = x_train/255
 x_test = x_test/255
 x_shape = x_train[0].shape
 
-noise_factor =0.2
-x_train_noisy = x_train + noise_factor * np.random.normal(loc=0.0, scale=1.0, size=x_train.shape) 
-x_test_noisy = x_test + noise_factor * np.random.normal(loc=0.0, scale=1.0, size=x_test.shape) 
-
-x_train_noisy = np.clip(x_train_noisy, 0., 1.)
-x_test_noisy = np.clip(x_test_noisy, 0., 1.)
-
-x_test.shape
-
-input_img = Input(shape=(x_shape))  # adapt this if using `channels_first` image data format
+input_img = Input(shape=(x_shape))
 
 x = Conv2D(64, (3, 3), activation=tf.nn.relu, padding='same')(input_img)
 x = BatchNormalization()(x)
@@ -54,7 +44,7 @@ autoencoder.compile(optimizer='adam', loss='binary_crossentropy',)
 earlystopping = EarlyStopping(monitor='val_loss', patience=2, verbose=1, mode='auto')
 
 autoencoder.fit(
-    x_train_noisy, x_train, epochs=50, batch_size=128, validation_data=(x_test, x_test_noisy), callbacks = [earlystopping])
+    x_train, x_train, epochs=50, batch_size=128, validation_data=(x_test, x_test), callbacks = [earlystopping])
 
 decoded_imgs = autoencoder.predict(x_test)
 
