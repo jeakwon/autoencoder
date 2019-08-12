@@ -1,1 +1,1 @@
-# gan
+# autoencoder
